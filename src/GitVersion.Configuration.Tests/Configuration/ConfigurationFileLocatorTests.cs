@@ -185,6 +185,25 @@ public static class ConfigurationFileLocatorTests
             config.ShouldNotBe(Path.GetFullPath("Configuration/CustomConfig.yaml"));
         }
 
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("Configuration/CustomConfig2.yaml")]
+        public void ReturnConfigurationFilePathIfCustomConfigurationIsSet_InvalidConfigurationFilePaths(string? configFile)
+        {
+            this.workingPath = this.repoPath;
+
+            this.gitVersionOptions = new() { ConfigurationInfo = { ConfigurationFile = configFile } };
+            var sp = GetServiceProvider(this.gitVersionOptions);
+            this.configFileLocator = sp.GetRequiredService<IConfigurationFileLocator>();
+            this.fileSystem = sp.GetRequiredService<IFileSystem>();
+
+            using var _ = this.fileSystem.SetupConfigFile(path: this.workingPath, fileName: ConfigFile);
+
+            var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
+            config.ShouldNotBe(null);
+        }
+
         [Test]
         public void DoNotThrowWhenConfigFileIsInSubDirectoryOfRepoPath()
         {
