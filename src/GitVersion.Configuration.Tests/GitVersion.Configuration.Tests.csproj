@@ -4,6 +4,12 @@
         <ProjectReference Include="..\GitVersion.Core.Tests\GitVersion.Core.Tests.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Configuration\CustomConfig.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <!-- Add the following target to copy the workflow files to the docs folder.
          Whenever the Workflow changes, the docs folder will be updated with the latest version.
     -->

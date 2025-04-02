@@ -1,0 +1,75 @@
+assembly-versioning-scheme: MajorMinorPatch
+assembly-versioning-format: '{Major}.0.0'
+assembly-file-versioning-scheme: MajorMinorPatchTag
+assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber}'
+mode: ContinuousDelivery
+version-in-branch-pattern: (?<version>[vV]?\d+(\.\d+)?(\.\d+)?).*
+tag-prefix: ''
+major-version-bump-message: '\[semver:\s?(realbreaking|realmajor)]'
+minor-version-bump-message: '\[semver:\s?(realfeature|realminor)]'
+patch-version-bump-message: '\[semver:\s?(rfix|rpatch)]'
+no-bump-message: '\[semver:\s?(realnone|realskip)]'
+tag-pre-release-weight: 60000
+commit-date-format: yyyy-MM-dd
+merge-message-formats: {}
+semantic-version-format: Strict
+strategies:
+- ConfiguredNextVersion
+- Mainline
+increment: Inherit
+prevent-increment:
+  of-merged-branch: false
+  when-branch-merged: false
+  when-current-commit-tagged: true
+track-merge-target: false
+track-merge-message: false
+tracks-release-branches: false
+commit-message-incrementing: Enabled
+is-release-branch: false
+is-main-branch: false
+label: ''
+branches:
+  main:
+    regex: ^dev(elop)?(ment)?$
+    mode: ContinuousDeployment
+    label: alpha
+    increment: Minor
+    prevent-increment:
+      of-merged-branch: true
+    track-merge-target: false
+    track-merge-message: false
+    source-branches: []
+    is-source-branch-for: []
+    tracks-release-branches: false
+    is-release-branch: false
+    is-main-branch: true
+    pre-release-weight: 0
+  release:
+    regex: ^release?[/-]
+    mode: ContinuousDeployment
+    label: ''
+    increment: Patch
+    prevent-increment:
+      of-merged-branch: true
+      when-branch-merged: false
+      when-current-commit-tagged: false
+    track-merge-target: false
+    track-merge-message: false
+    source-branches: []
+    is-source-branch-for: []
+    tracks-release-branches: false
+    is-release-branch: false
+    is-main-branch: true
+    pre-release-weight: 60000
+  feature:
+    # Match nothing
+    regex: ^\b$
+  pull-request:
+    # Match nothing
+    regex: ^\b$
+  hotfix:
+    # Match nothing
+    regex: ^\b$
+  support:
+    # Match nothing
+    regex: ^\b$

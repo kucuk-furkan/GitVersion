@@ -40,6 +40,14 @@ internal class ConfigurationFileLocator(
 
     public string? GetConfigurationFile(string? directory)
     {
+        // If configuration file overriden and its exists, return it
+        if (!string.IsNullOrWhiteSpace(this.ConfigurationFile) &&
+            PathHelper.IsPathRooted(this.ConfigurationFile) &&
+            fileSystem.File.Exists(this.ConfigurationFile))
+        {
+            return this.ConfigurationFile;
+        }
+
         if (directory is null) return null;
 
         string[] candidates = !string.IsNullOrWhiteSpace(this.ConfigurationFile)
