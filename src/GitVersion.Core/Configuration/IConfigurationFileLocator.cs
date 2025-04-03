@@ -4,5 +4,4 @@ public interface IConfigurationFileLocator
 {
     void Verify(string? workingDirectory, string? projectRootDirectory);
     string? GetConfigurationFile(string? directoryPath);
-    string? GetConfigurationFileTemp(string? directoryPath);
 }

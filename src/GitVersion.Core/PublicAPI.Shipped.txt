@@ -114,7 +114,6 @@ GitVersion.Configuration.IConfigurationBuilder.AddOverride(System.Collections.Ge
 GitVersion.Configuration.IConfigurationBuilder.Build() -> GitVersion.Configuration.IGitVersionConfiguration!
 GitVersion.Configuration.IConfigurationFileLocator
 GitVersion.Configuration.IConfigurationFileLocator.GetConfigurationFile(string? directoryPath) -> string?
-GitVersion.Configuration.IConfigurationFileLocator.GetConfigurationFileTemp(string? directoryPath) -> string?
 GitVersion.Configuration.IConfigurationFileLocator.Verify(string? workingDirectory, string? projectRootDirectory) -> void
 GitVersion.Configuration.IConfigurationProvider
 GitVersion.Configuration.IConfigurationProvider.Provide(System.Collections.Generic.IReadOnlyDictionary<object!, object?>? overrideConfiguration = null) -> GitVersion.Configuration.IGitVersionConfiguration!
