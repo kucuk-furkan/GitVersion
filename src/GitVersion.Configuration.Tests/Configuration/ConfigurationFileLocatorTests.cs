@@ -174,7 +174,7 @@ public static class ConfigurationFileLocatorTests
         {
             this.workingPath = this.repoPath;
 
-            this.gitVersionOptions = new() { ConfigurationInfo = { ConfigurationFile = "Configuration/CustomConfig.yaml" } };
+            this.gitVersionOptions = new() { ConfigurationInfo = { ConfigurationFile = Path.Combine(this.workingPath, "Configuration", "CustomConfig.yaml") } };
 
             var serviceProvider = GetServiceProvider(this.gitVersionOptions);
             this.fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
@@ -186,6 +186,55 @@ public static class ConfigurationFileLocatorTests
 
             var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
             config.ShouldBe(Path.GetFullPath("Configuration/CustomConfig.yaml"));
+        }
+
+        [Test]
+        public void ReturnConfigurationFilePathIfCustomConfigurationIsSet_PerformanceComparison()
+        {
+            this.workingPath = this.repoPath;
+
+            this.gitVersionOptions = new() { ConfigurationInfo = { ConfigurationFile = Path.Combine(this.workingPath, "Configuration", "CustomConfig.yaml") } };
+
+            var serviceProvider = GetServiceProvider(this.gitVersionOptions);
+            this.fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
+
+            using var _ = this.fileSystem.SetupConfigFile(
+                path: Path.Combine(this.workingPath, "Configuration"), fileName: "CustomConfig2.yaml"
+            );
+            this.configFileLocator = serviceProvider.GetRequiredService<IConfigurationFileLocator>();
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+            var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
+            stopwatch.Stop();
+            long et1 = stopwatch.ElapsedTicks;
+
+            stopwatch.Reset();
+            stopwatch.Start();
+            config = this.configFileLocator.GetConfigurationFileTemp(this.workingPath);
+            stopwatch.Stop();
+            long et2 = stopwatch.ElapsedTicks;
+
+            //et1.ShouldBeLessThan(et2);
+
+            stopwatch.Reset();
+            stopwatch.Start();
+            for (int i = 0; i < 1000000; i++)
+            {
+                config = this.configFileLocator.GetConfigurationFile(this.workingPath);
+            }
+            stopwatch.Stop();
+            long et3 = stopwatch.ElapsedMilliseconds;
+
+            stopwatch.Reset();
+            stopwatch.Start();
+            for (int i = 0; i < 1000000; i++)
+            {
+                config = this.configFileLocator.GetConfigurationFileTemp(this.workingPath);
+            }
+            stopwatch.Stop();
+            long et4 = stopwatch.ElapsedMilliseconds;
+
+            et3.ShouldBeLessThan(et4);
         }
 
         [TestCase(null)]
