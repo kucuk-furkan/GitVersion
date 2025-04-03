@@ -195,7 +195,7 @@ public static class ConfigurationFileLocatorTests
             this.configFileLocator = sp.GetRequiredService<IConfigurationFileLocator>();
 
             var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
-            config.ShouldNotBe(null);
+            config.ShouldBe(null);
         }
 
         [Test]
