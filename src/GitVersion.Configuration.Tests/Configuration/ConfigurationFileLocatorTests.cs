@@ -177,9 +177,6 @@ public static class ConfigurationFileLocatorTests
             this.gitVersionOptions = new() { ConfigurationInfo = { ConfigurationFile = "Configuration/CustomConfig.yaml" } };
             var sp = GetServiceProvider(this.gitVersionOptions);
             this.configFileLocator = sp.GetRequiredService<IConfigurationFileLocator>();
-            this.fileSystem = sp.GetRequiredService<IFileSystem>();
-
-            using var _ = this.fileSystem.SetupConfigFile(path: this.workingPath, fileName: ConfigFile);
 
             var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
             config.ShouldNotBe(Path.GetFullPath("Configuration/CustomConfig.yaml"));
@@ -196,9 +193,6 @@ public static class ConfigurationFileLocatorTests
             this.gitVersionOptions = new() { ConfigurationInfo = { ConfigurationFile = configFile } };
             var sp = GetServiceProvider(this.gitVersionOptions);
             this.configFileLocator = sp.GetRequiredService<IConfigurationFileLocator>();
-            this.fileSystem = sp.GetRequiredService<IFileSystem>();
-
-            using var _ = this.fileSystem.SetupConfigFile(path: this.workingPath, fileName: ConfigFile);
 
             var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
             config.ShouldNotBe(null);
