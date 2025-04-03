@@ -175,11 +175,17 @@ public static class ConfigurationFileLocatorTests
             this.workingPath = this.repoPath;
 
             this.gitVersionOptions = new() { ConfigurationInfo = { ConfigurationFile = "Configuration/CustomConfig.yaml" } };
-            var sp = GetServiceProvider(this.gitVersionOptions);
-            this.configFileLocator = sp.GetRequiredService<IConfigurationFileLocator>();
+
+            var serviceProvider = GetServiceProvider(this.gitVersionOptions);
+            this.fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
+
+            using var _ = this.fileSystem.SetupConfigFile(
+                path: Path.Combine(this.workingPath, "Configuration"), fileName: "CustomConfig.yaml"
+            );
+            this.configFileLocator = serviceProvider.GetRequiredService<IConfigurationFileLocator>();
 
             var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
-            config.ShouldNotBe(Path.GetFullPath("Configuration/CustomConfig.yaml"));
+            Path.GetFileName(config).ShouldBe("CustomConfig.yaml");
         }
 
         [TestCase(null)]
