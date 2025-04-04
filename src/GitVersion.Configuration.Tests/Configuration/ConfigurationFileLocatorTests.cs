@@ -185,7 +185,7 @@ public static class ConfigurationFileLocatorTests
             this.configFileLocator = serviceProvider.GetRequiredService<IConfigurationFileLocator>();
 
             var config = this.configFileLocator.GetConfigurationFile(this.workingPath);
-            config.ShouldBe(Path.GetFullPath("Configuration/CustomConfig.yaml"));
+            config.ShouldBe(Path.Combine(this.workingPath, "Configuration", "CustomConfig.yaml"));
         }
 
         [TestCase(null)]
