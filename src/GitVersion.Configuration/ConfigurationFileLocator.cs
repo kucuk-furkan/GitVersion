@@ -40,35 +40,46 @@ internal class ConfigurationFileLocator(
 
     public string? GetConfigurationFile(string? directoryPath)
     {
-        string[] configurationFilePaths = string.IsNullOrWhiteSpace(this.ConfigurationFile)
-        ? this.SupportedConfigFileNames : [this.ConfigurationFile, .. this.SupportedConfigFileNames];
-
-        foreach (var item in configurationFilePaths)
+        string? customConfigurationFile = GetCustomConfigurationFilePathIfEligable(directoryPath);
+        if (!string.IsNullOrWhiteSpace(customConfigurationFile))
         {
-            this.log.Debug($"Trying to find configuration file {item} at '{directoryPath}'");
+            return customConfigurationFile;
+        }
 
-            string configurationFilePath;
-            if (!PathHelper.IsPathRooted(item))
+        if (string.IsNullOrWhiteSpace(directoryPath) || !fileSystem.Directory.Exists(directoryPath))
+        {
+            return null;
+        }
+
+        string[] files = fileSystem.Directory.GetFiles(directoryPath);
+        foreach (var fileName in this.SupportedConfigFileNames)
+        {
+            this.log.Debug($"Trying to find configuration file {fileName} at '{directoryPath}'");
+            string? matchingFile = files.FirstOrDefault(file => string.Equals(PathHelper.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase));
+            if (matchingFile != null)
             {
-                if (string.IsNullOrEmpty(directoryPath))
-                {
-                    this.log.Info($"The configuration file '{item}' is relative and no directory path known.");
-                    continue;
-                }
-                configurationFilePath = Path.Combine(directoryPath, item);
+                this.log.Info($"Found configuration file at '{matchingFile}'");
+                return matchingFile;
             }
-            else
+        }
+
+        return null;
+    }
+
+    private string? GetCustomConfigurationFilePathIfEligable(string? directoryPath)
+    {
+        if (!string.IsNullOrWhiteSpace(this.ConfigurationFile))
+        {
+            string configurationFilePath = this.ConfigurationFile;
+            if (!string.IsNullOrWhiteSpace(directoryPath))
             {
-                configurationFilePath = item;
+                configurationFilePath = Path.Combine(directoryPath, this.ConfigurationFile);
             }
 
             if (fileSystem.File.Exists(configurationFilePath))
             {
-                this.log.Info($"Found configuration file at '{configurationFilePath}'");
                 return configurationFilePath;
             }
-
-            this.log.Debug($"Configuration file {configurationFilePath} not found at '{directoryPath}'");
         }
 
         return null;
